@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca Técnica de Rodamientos Industriales</title>
+<meta name="description" content="Buscador técnico de rodamientos industriales: referencias, dimensiones, tolerancias ISO 286, equivalencias entre fabricantes y calculadoras de metrología para mantenimiento de motores eléctricos.">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ======================= HEADER ======================= -->
+<header class="topbar">
+  <div class="topbar__brand">
+    <img src="assets/logo.png" alt="Logo" class="topbar__logo">
+    <div class="topbar__title">
+      <span class="topbar__name">Biblioteca Técnica de Rodamientos</span>
+      <span class="topbar__sub">Mantenimiento &amp; metrología de motores eléctricos industriales</span>
+    </div>
+  </div>
+
+  <div class="topbar__search">
+    <input id="globalSearch" type="text" autocomplete="off" placeholder="Buscar referencia… ej. 6204 C3, NU314, 22220 EK">
+    <div id="autocompleteBox" class="autocomplete"></div>
+  </div>
+
+  <nav class="topbar__nav">
+    <button class="navbtn active" data-view="buscador">Buscador</button>
+    <button class="navbtn" data-view="motor">Datos del motor</button>
+    <button class="navbtn" data-view="comparador">Comparador</button>
+    <button class="navbtn" data-view="equivalencias">Equivalencias</button>
+    <button class="navbtn" data-view="tolerancias">Tolerancias ISO</button>
+    <button class="navbtn" data-view="calculadoras">Calculadoras</button>
+    <button class="navbtn" data-view="glosario">Glosario</button>
+  </nav>
+</header>
+
+<!-- ======================= MAIN LAYOUT ======================= -->
+<div class="layout">
+
+  <!-- ---------- LEFT: FILTERS ---------- -->
+  <aside class="filters" id="filtersPanel">
+    <h2>Filtros</h2>
+
+    <div class="filtergroup">
+      <label>Diámetro interior d (mm)</label>
+      <div class="row2"><input type="number" id="fD1" placeholder="mín"><input type="number" id="fD2" placeholder="máx"></div>
+    </div>
+    <div class="filtergroup">
+      <label>Diámetro exterior D (mm)</label>
+      <div class="row2"><input type="number" id="fOD1" placeholder="mín"><input type="number" id="fOD2" placeholder="máx"></div>
+    </div>
+    <div class="filtergroup">
+      <label>Ancho B (mm)</label>
+      <div class="row2"><input type="number" id="fB1" placeholder="mín"><input type="number" id="fB2" placeholder="máx"></div>
+    </div>
+
+    <div class="filtergroup">
+      <label>Marca</label>
+      <div id="fBrand" class="chipset"></div>
+    </div>
+
+    <div class="filtergroup">
+      <label>Tipo de rodamiento</label>
+      <select id="fType"><option value="">Todos</option></select>
+    </div>
+
+    <div class="filtergroup">
+      <label>Serie</label>
+      <select id="fSeries"><option value="">Todas</option></select>
+    </div>
+
+    <div class="filtergroup">
+      <label>Juego interno</label>
+      <div id="fClearance" class="chipset"></div>
+    </div>
+
+    <div class="filtergroup">
+      <label>Sellado</label>
+      <div id="fSeal" class="chipset"></div>
+    </div>
+
+    <button id="btnClearFilters" class="btn btn--ghost btn--full">Limpiar filtros</button>
+    <div class="filters__count" id="resultCount">—</div>
+  </aside>
+
+  <!-- ---------- RIGHT: CONTENT ---------- -->
+  <main class="content">
+
+    <!-- ===== VIEW: BUSCADOR ===== -->
+    <section class="view active" id="view-buscador">
+      <div class="viewhead">
+        <h1>Buscador de rodamientos</h1>
+        <p>Busca por referencia, por diámetro del eje o por diámetro del alojamiento. Usa los filtros de la izquierda para refinar.</p>
+      </div>
+
+      <div class="searchmodes">
+        <div class="searchmode">
+          <label>Diámetro del eje medido (mm)</label>
+          <input type="number" id="searchShaft" placeholder="ej. 40">
+        </div>
+        <div class="searchmode">
+          <label>Diámetro del alojamiento medido (mm)</label>
+          <input type="number" id="searchHousing" placeholder="ej. 80">
+        </div>
+        <button id="btnSearchDims" class="btn btn--primary">Buscar por medidas</button>
+      </div>
+
+      <div id="resultsGrid" class="grid"></div>
+    </section>
+
+    <!-- ===== VIEW: FICHA TECNICA (overlay) ===== -->
+    <section class="view" id="view-ficha">
+      <button class="btn btn--ghost" id="btnBackToSearch">&larr; Volver al buscador</button>
+      <div id="fichaContent"></div>
+    </section>
+
+    <!-- ===== VIEW: MOTOR ===== -->
+    <section class="view" id="view-motor">
+      <div class="viewhead">
+        <h1>Identificación por datos del motor</h1>
+        <p>Introduce las cuatro medidas de los alojamientos y los ejes en ambos lados del motor. La aplicación analizará las medidas y sugerirá los rodamientos más probables para cada lado.</p>
+      </div>
+      <div class="motorform">
+        <div class="motorform__side">
+          <h3>Lado acople (LA)</h3>
+          <label>Diámetro alojamiento LA (mm)</label>
+          <input type="number" id="motorHousingLA" placeholder="ej. 80">
+          <label>Diámetro eje LA (mm)</label>
+          <input type="number" id="motorShaftLA" placeholder="ej. 40">
+        </div>
+        <div class="motorform__side">
+          <h3>Lado libre (LV)</h3>
+          <label>Diámetro alojamiento LV (mm)</label>
+          <input type="number" id="motorHousingLV" placeholder="ej. 80">
+          <label>Diámetro eje LV (mm)</label>
+          <input type="number" id="motorShaftLV" placeholder="ej. 40">
+        </div>
+      </div>
+      <button id="btnMotorAnalyze" class="btn btn--primary">Analizar y sugerir rodamientos</button>
+      <div id="motorResults"></div>
+    </section>
+
+    <!-- ===== VIEW: COMPARADOR ===== -->
+    <section class="view" id="view-comparador">
+      <div class="viewhead">
+        <h1>Comparador de rodamientos</h1>
+        <p>Selecciona hasta 4 rodamientos desde el buscador (botón "Comparar" en cada tarjeta) para verlos lado a lado.</p>
+      </div>
+      <div id="compareSlots" class="compareSlots"></div>
+      <div id="compareTableWrap"></div>
+    </section>
+
+    <!-- ===== VIEW: EQUIVALENCIAS ===== -->
+    <section class="view" id="view-equivalencias">
+      <div class="viewhead">
+        <h1>Equivalencias entre fabricantes</h1>
+        <p>Indica una referencia para ver su equivalente aproximado en otras marcas (mismas dimensiones d × D × B y tipo).</p>
+      </div>
+      <input type="text" id="equivInput" placeholder="ej. 6208 C3, NU314, 22220" class="bigInput">
+      <div id="equivResults"></div>
+    </section>
+
+    <!-- ===== VIEW: TOLERANCIAS ===== -->
+    <section class="view" id="view-tolerancias">
+      <div class="viewhead">
+        <h1>Tolerancias ISO 286 y conversor de ajustes</h1>
+        <p>Valores normalizados de referencia técnica para asientos de rodamientos en eje y alojamiento. Verifica siempre límites críticos contra la norma oficial o el catálogo del fabricante.</p>
+      </div>
+
+      <div class="card">
+        <h3>Conversor de tolerancias</h3>
+        <div class="convForm">
+          <label>Diámetro nominal (mm)<input type="number" id="convDia" placeholder="ej. 50"></label>
+          <label>Tipo de ajuste<input type="text" id="convFit" placeholder="ej. k6, H7, M7"></label>
+          <button id="btnConvCalc" class="btn btn--primary">Calcular</button>
+        </div>
+        <div id="convResult"></div>
+      </div>
+
+      <div class="card">
+        <h3>Tabla de ajustes recomendados para asientos de rodamientos</h3>
+        <div id="recommendedTable"></div>
+      </div>
+
+      <div class="card">
+        <h3>Tabla rápida de tolerancias por diámetro</h3>
+        <div class="convForm">
+          <label>Diámetro nominal (mm)<input type="number" id="tolTableDia" placeholder="ej. 40" value="40"></label>
+        </div>
+        <div id="tolTableResult"></div>
+      </div>
+    </section>
+
+    <!-- ===== VIEW: CALCULADORAS ===== -->
+    <section class="view" id="view-calculadoras">
+      <div class="viewhead">
+        <h1>Calculadoras de metrología y montaje</h1>
+      </div>
+      <div class="calcGrid" id="calcGrid"></div>
+    </section>
+
+    <!-- ===== VIEW: GLOSARIO ===== -->
+    <section class="view" id="view-glosario">
+      <div class="viewhead">
+        <h1>Glosario técnico</h1>
+        <p>Significado de los códigos y sufijos más comunes en la designación de rodamientos.</p>
+      </div>
+      <div id="glossaryList" class="glossary"></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <span>Biblioteca Técnica de Rodamientos Industriales — datos dimensionales según ISO 15 / ISO 492; capacidades de carga y tolerancias son valores orientativos de referencia. Verificar siempre contra el catálogo oficial del fabricante para diseño crítico.</span>
+</footer>
+
+<script src="js/iso286.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
